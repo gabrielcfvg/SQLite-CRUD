@@ -1,11 +1,12 @@
 import sqlite3
 
+arquivo = r''
 
 def sqlite(func):
 
 	def operação(**kwargs):
 
-		conexão = sqlite3.connect("teste.db")
+		conexão = sqlite3.connect(arquivo)
 		cursor = conexão.cursor()
 
 		a = func(cursor=cursor, **kwargs)
@@ -86,9 +87,10 @@ def deletar(**kwargs):
 def selecionar(**kwargs):
 	"""
 	tabela = tabela a procurar,
-	v1 = célula a ser selecionada,
+	v1 = célula(s) a ser selecionada,
 	v2 = célula a procurar,
 	v3 = valor esperado no v2.
+	ATENÇÃO: Ao usar mais de um valor no V1, formate corretamente!!!
 	"""
 	
 	cursor = kwargs.get("cursor")
@@ -99,8 +101,21 @@ def selecionar(**kwargs):
 	v3 = formatação(kwargs.get("v3"))
 
 	cursor.execute(f"SELECT {v1} FROM {tabela} WHERE {v2} = {v3}")
-	return cursor.fetchone()[0]
+	
+	res = cursor.fetchone()
+	if res:
+		if len(res) > 1:
+			return list(cursor.fetchone())
+		else:
+			return res[0]
+	else:
+		return None
 
+
+
+
+#sqlite3.IntegrityError = nome já existente
+#selecionar retorna None: nenhum valor encontrado
 
 #deletar(tabela="users", v1='nome', v2='gabriel')
 #atualizar(tabela='users', v1="num", v2=999, v3='nome', v4="gabriel")
