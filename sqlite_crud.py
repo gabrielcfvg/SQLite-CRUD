@@ -6,9 +6,12 @@ def sqlite(func):
 
 	def operação(**kwargs):
 
+		if not arquivo:
+			raise Exception("""O endereço do banco não foi apontado, utilize a função "conectar" para apontar o endereço do banco a ser utilizado.""")
+
 		conexão = sqlite3.connect(arquivo)
 		cursor = conexão.cursor()
-
+		
 		a = func(cursor=cursor, **kwargs)
 
 		conexão.commit()
@@ -34,6 +37,10 @@ def formatação(valores):
 	else:
 		saida = str(valores) if type(valores) == int else f"'{valores}'"
 	return saida
+
+def conectar(endereço:str="database.db"):
+	global arquivo
+	arquivo = endereço
 
 @sqlite
 def inserir(**kwargs):
